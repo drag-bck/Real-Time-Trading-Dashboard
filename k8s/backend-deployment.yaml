@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trading-backend
+  labels: { app: trading-backend }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: trading-backend } }
+  template:
+    metadata: { labels: { app: trading-backend } }
+    spec:
+      containers:
+        - name: backend
+          image: trading-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 4000 }]
+          env:
+            - { name: PORT, value: "4000" }
+            - { name: JWT_SECRET, valueFrom: { secretKeyRef: { name: trading-secrets, key: jwt, optional: true } } }
+            - { name: TICK_INTERVAL_MS, value: "1000" }
+          readinessProbe:
+            httpGet: { path: /api/health, port: 4000 }
+            initialDelaySeconds: 3
+          livenessProbe:
+            httpGet: { path: /api/health, port: 4000 }
+            initialDelaySeconds: 10

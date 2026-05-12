@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trading-frontend
+  labels: { app: trading-frontend }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: trading-frontend } }
+  template:
+    metadata: { labels: { app: trading-frontend } }
+    spec:
+      containers:
+        - name: frontend
+          image: trading-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 80 }]
